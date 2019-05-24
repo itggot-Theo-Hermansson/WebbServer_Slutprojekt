@@ -25,6 +25,10 @@ helpers do
         session[:error_no_info_message] = nil
         return message
     end
+
+    def admin?
+        session[:user_type] == "Admin"
+    end
 end
 
 
@@ -51,9 +55,8 @@ end
 get('/admin') do
     if session[:username] == nil
         redirect('/login')
-    end
-    admin(params, session['user_id'])
-    if user_type['User_type'] == "Admin" 
+    end 
+    if admin? 
         slim(:admin)
     else
         redirect('/produkter')
@@ -68,7 +71,8 @@ get('/admin/help') do
     if session[:username] == nil
         redirect('/login')
     end
-    admin_tickets(params, session)
+    admin?
+    admin_tickets(params, session["user_id"])
     slim(:admin_help)
     redirect('/admin/help')
 end
@@ -94,7 +98,7 @@ end
 # Performs the login 
 #
 post('/login') do
-    result = login(params, session)
+    result = login(params)
 
     if result[:validate_login_error]
         session[:validate_login_error_message] = result[:validate_login_error_message]
@@ -106,6 +110,7 @@ post('/login') do
         session[:error_no_info_message] = result[:error_no_info_msg]
         redirect back
     else
+        session[:user_type] = result[:user_type]
         session[:user_id] = result[:user_id]
         session[:username] = result[:username]
         redirect("/produkter")
@@ -173,12 +178,15 @@ end
 # Edits the username
 #
 post('/edit_profile') do
-    edit_profile(params, session)
+    edit_profile(params, session["user_id"])
 end
 
 # Display Moncler Products
 #
 get('/produkter/moncler') do
+    if session[:username] == nil
+        redirect('/login')
+    end
     moncler_info = moncler(params, session['user_id'])
     slim(:moncler, locals:{
         result: moncler_info
@@ -188,7 +196,7 @@ end
 # Performs the purchase
 #
 post('/produkter/moncler') do
-    buy(params, session)
+    buy(params, session["product"])
 end
 
 # Displays main product page
@@ -203,12 +211,15 @@ end
 # Purchase of products
 #
 post('/produkter') do
-    buy(params, session)
+    buy(params, session["product"])
 end
 
 # Display Stonge-Island products
 #
 get('/produkter/Stone-Island') do
+    if session[:username] == nil
+        redirect('/login')
+    end
     stoneisland_info = stoneisland(params, session['user_id'])
     slim(:stoneisland, locals:{
         result: stoneisland_info
@@ -218,12 +229,15 @@ end
 # Performs the purchase of a Stone-Island Product
 #
 post('/produkter/Stone-Island') do
-    buy(params, session)
+    buy(params, session["product"])
 end
 
 # Displays the Givenchy products
 #
 get('/produkter/Givenchy') do
+    if session[:username] == nil
+        redirect('/login')
+    end
     givenchy_info = givenchy(params, session['user_id'])
     slim(:givenchy, locals:{
         result: givenchy_info
@@ -233,7 +247,7 @@ end
 # Performs the purchase of a Givenchy Product
 #
 post('/produkter/Givenchy') do
-    buy(params, session)
+    buy(params, session["product"])
 end
 
 # Displays the help page
@@ -248,5 +262,5 @@ end
 # Send the ticket
 #
 post('/help') do
-    kundsupport(params, session)
+    kundsupport(params, session["user_id"], session["username"])
 end

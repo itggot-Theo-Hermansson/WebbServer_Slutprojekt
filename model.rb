@@ -52,7 +52,7 @@ module MyModule
     # 
     # @return [Hash], Info from Login
     # 
-    def login(params, session)
+    def login(params)
         if validate_login(params)
             db = database()
     
@@ -62,7 +62,8 @@ module MyModule
                     return {
                         login_error: false,
                         user_id: result[0]["Id"],
-                        username: params["Username"]
+                        username: params["Username"],
+                        user_type: result[0]["User_type"]
                     }
                 else
                     return {
@@ -102,29 +103,18 @@ module MyModule
     # 
     # @param [Hash] Data from params
     # @option params [String] Password
-    def edit_profile(params, session)
+    def edit_profile(params, user_id)
         if validate_edit_profile(params)
             db = database()
     
-            db.execute(%Q(UPDATE users SET Username = '#{params['Rubrik']}' WHERE Id = #{session['user_id']}))
+            db.execute(%Q(UPDATE users SET Username = '#{params['Rubrik']}' WHERE Id = #{user_id}))
     
             session.destroy
         end
     end
-
-    # Admin checker
-    #
-    # @param [Hash] Data from params
-    # @param [String] Local Variables
-    # @option params [String] User_Type
-    def admin(params, user_id)
-        db = database()
-    
-        user_type = db.execute('SELECT User_type FROM users WHERE Id = ?', user_id).first
-    end
     
     # Log Out function
-    #
+    # 
     # @param [Hash] Data from params
     def log_out(params)
         session.destroy
@@ -134,7 +124,7 @@ module MyModule
     # 
     # @param [Hash] Data from params
     # @param [String] Local Variables
-    def admin_tickets(params, session)
+    def admin_tickets(params, user_id)
         db = database()
         session['tickets'] = db.execute('SELECT Id, Username, Ticket FROM support_tickets')
     end
@@ -163,7 +153,7 @@ module MyModule
         end
         return {
             product1: prod_name1,
-            pris: pris
+            price: pris
         }
     
     end
@@ -183,7 +173,7 @@ module MyModule
             pris = original_price[0]
         end
         return {
-            product1: prod_nam1,
+            product1: prod_name1,
             price: pris
         }
     end
@@ -193,14 +183,8 @@ module MyModule
     # @param [Hash] Data from params
     def produkter(params)
         db = database()
-        prod_name1 = db.execute('SELECT Kategori FROM produkter WHERE Id = "1"')
-        prod_name2 = db.execute('SELECT Kategori FROM produkter WHERE Id = "2"')
-        prod_name3= db.execute('SELECT Kategori FROM produkter WHERE Id = "3"')
-        return {
-            product1: prod_name1,
-            product2: prod_name2,
-            product3: prod_name3
-        }
+        prod_name1 = db.execute('SELECT Kategori FROM produkter WHERE Id = "1" OR "2" OR "3"')
+        return prod_name1
     end
     
     # Order history
@@ -230,7 +214,7 @@ module MyModule
             pris = original_price[0]
         end
         return {
-            product1: prod_nam1,
+            product1: prod_name1,
             price: pris
         }
     end
@@ -239,10 +223,10 @@ module MyModule
     #
     # @param [Hash] Data from params
     # @param [String] Local Variables
-    def buy(params, session)
+    def buy(params, product)
         db = database()
         amount = db.execute('SELECT Amount FROM produkter WHERE Id = ?', params['buy']).first
-        session['product'] = db.execute('SELECT Produkt_Namn FROM produkter WHERE Id = ?', params['buy']).first
+        product = db.execute('SELECT Produkt_Namn FROM produkter WHERE Id = ?', params['buy']).first
         antal_kvar = amount[0] - 1
         db.execute('UPDATE produkter SET Amount = ? WHERE Id = ?', antal_kvar, params['buy'])
         db.execute('INSERT INTO ordrar (Id) VALUES (?)', params['buy'])
@@ -252,8 +236,8 @@ module MyModule
     #
     # @param [Hash] Data from params
     # @param [String] Local Variables
-    def kundsupport(params, session)
+    def kundsupport(params, user_id, username)
         db = database()
-        db.execute("INSERT INTO support_tickets (Id, Username, Ticket) VALUES (?, ?, ?)", session['user_id'], session['username'], params["Help"])
+        db.execute("INSERT INTO support_tickets (Id, Username, Ticket) VALUES (?, ?, ?)", user_id, username, params["Help"])
     end
 end

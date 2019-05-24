@@ -1,9 +1,9 @@
 .container
     h1 Moncler
     .produkt1    
-        - product1.each do |e|
+        - result[:product1].each do |e|
             h4 = e["Produkt_Namn"]
-            p = price
+            p = result[:price]
             form action="/produkter/moncler" method="POST"
                 button value="#{e["Id"]}" name="buy" Köp
                     

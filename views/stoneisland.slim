@@ -1,8 +1,8 @@
 .container
     h1 Stone-Island
-    .produkt1    
-        - product1.each do |e|
+    .produkt1
+        - result[:product1].each do |e|
             h4 = e["Produkt_Namn"]
-            p = price
+            p = result[:price]
             form action="/produkter/Stone-Island" method="POST"
                 button value="#{e["Id"]}" name="buy" Köp
