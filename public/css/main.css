@@ -1,0 +1,36 @@
+.container{
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: 4;
+    display: grid;
+    width: 100%;
+    margin: 0 auto;
+    height: 100%;
+}
+
+h1{
+    text-align: center;
+    grid-row: span 1;
+    grid-column: span 8;
+}
+
+.nav-wrapper{
+    grid-row: 2 / 3;
+    grid-column: 1 / 10;
+    margin: 0 auto;
+}
+
+nav{
+    grid-row: 2 / 3;
+    grid-column: 1 / 10;
+    margin: 0 auto;
+}
+
+.login{
+    grid-row: 2 / 3;
+    grid-column: 8 / 9;
+    text-align: center;
+}
+
+.a{
+    font-family: 'Times New Roman', Times, serif;
+}

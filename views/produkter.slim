@@ -1,0 +1,32 @@
+.container
+    h1 High End Store
+
+nav
+    .nav-wrapper
+        ul
+            li
+                .produkt1    
+                    - show_products.each do |e|
+                        a href="/produkter/Stone-Island" = e["Kategori"]
+            li
+                .produkt2
+                    - show_products.each do |e|
+                        a href="/produkter/Givenchy" = e["Kategori"]
+            li
+                .produkt3
+                    - show_products.each do |e|
+                        a href="/produkter/moncler" = e["Kategori"]
+            li
+                .login 
+                    a href="/login" Login
+            li
+                .profile
+                    a href="/profil" Profil
+            li
+                .help
+                    a href="/help" Help!
+            li.search
+                .search-wrapper.card.input-field
+                    input onkeyup="getBlogs(this.value,1);" required="" type="search"
+                    form action="/search"
+                        input type="submit" name="search" placeholder="Search" 

@@ -1,0 +1,11 @@
+form action="/login" method="POST"
+    - if session[:validate_login_error_message]
+            p.validate_login_error = get_validate_error()
+    - elsif session[:msg_login_failed]
+            p.login_error = get_error()
+    - elsif session[:error_no_info_message]
+            p.login_user_error = username_validate()
+    input type="text" name="Username" placeholder="Username"
+    input type="password" name="Password" placeholder="Password"
+    input type="submit" value="Login"
+

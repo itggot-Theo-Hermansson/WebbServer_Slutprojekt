@@ -1,0 +1,6 @@
+.support_tickets
+    - session[:tickets].reverse_each do |e|
+        h3 = e[0]
+        p = e[1]
+form action="/admin/help" method="POST"
+    input type="submit" value="Solve"

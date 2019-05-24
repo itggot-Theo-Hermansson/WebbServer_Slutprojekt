@@ -1,0 +1,5 @@
+p Profile Page
+p Welcome Back #{session[:username]}!
+a href="/edit_profile/#{session[:user_id]}" Edit Profile
+form action="/profil" Method="POST"
+    input type="submit" value="Log Out"
